@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+
+# Copyright (C) 2019, 2020 University of Rochester
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+ROOT_DIR=`dirname $0 | sed 's/$/\/../' | xargs realpath`
+
+PROJ=embench
+PROJ_DIR="$ROOT_DIR/workspace/$PROJ"
+RUN_CFG="$PROJ_DIR/$PROJ.cfg"
+
+PROGRAMS=(
+    "aha-mont64"
+    "crc32"
+    "cubic"
+    "edn"
+    "huffbench"
+    "matmult-int"
+    "md5sum"
+    "minver"
+    "nbody"
+    "nettle-aes"
+    "nettle-sha256"
+    "nsichneu"
+    "picojpeg"
+    "primecount"
+    "qrduino"
+    "sglib-combined"
+    "slre"
+    "st"
+    "statemate"
+    "tarfind"
+    "ud"
+    "wikisort"
+)
+
+PROGRAMS_EXCLUDED=(
+)
+
+CONFIGURATIONS=(
+    "baseline"
+    "ss"
+    "sp"
+    "cfi"
+    "silhouette"
+    "invert"
+    "sfifull"
+)
+
+#
+# Load common components.
+#
+. "$ROOT_DIR/scripts/common.sh"
+
+#
+# Entrance of the script.
+#
+case $1 in
+"run" )
+    if (( $# == 2 )); then
+        for prog in ${PROGRAMS[@]}; do
+            if [[ " ${PROGRAMS_EXCLUDED[@]} " =~ " $prog " ]]; then
+                continue
+            fi
+            run $2 $prog "Finished"
+        done
+    else
+        run $2 $3 "Finished"
+    fi
+    ;;
+* )
+    if (( $# == 1 )); then
+        # Compile each benchmark program
+        for prog in ${PROGRAMS[@]}; do
+            if [[ " ${PROGRAMS_EXCLUDED[@]} " =~ " $prog " ]]; then
+                continue
+            fi
+            compile $1 $prog
+        done
+
+        echo Done
+    else
+        compile $1 $2
+    fi
+    ;;
+esac

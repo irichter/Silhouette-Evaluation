@@ -57,6 +57,7 @@ benchmarks = [
     'beebs',
     'coremark',
     'coremark-pro',
+    'embench',
     'pinlock',
     'stm32apps',
 ]
